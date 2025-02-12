@@ -104,22 +104,22 @@
     
         // Create list item for each file, remove the file extension
         function createFileListItem(file) {
-            const listItem = document.createElement('li');
-            const fileName = file.split('.')[0];  
-            listItem.innerText = fileName;
+    const listItem = document.createElement('li');
+    const fileName = file.split('.')[0];  
+    listItem.innerText = fileName;
 
-            listItem.onclick = () => {
-                document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
-                listItem.classList.add('selected');
+    listItem.onclick = () => {
+        document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
+        listItem.classList.add('selected');
 
-                // Update URL without reloading the page
-                history.pushState(null, '', `/${fileName}`);
+        // Update URL without reloading the page
+        history.pushState(null, '', `?file=${fileName}`);
 
-                loadFileContent(file);
-            };
+        loadFileContent(file);
+    };
 
-            return listItem;
-        }
+    return listItem;
+}
 
 
 
@@ -160,21 +160,22 @@
         }
 
         function getFileFromURL() {
-            const path = window.location.pathname.split('/').pop(); // Get the last part of the URL
-            if (!path) return 'welcome.html'; // Default file
-            return files.includes(path + '.html') ? path + '.html' : 
-                files.includes(path + '.pdf') ? path + '.pdf' : 
-                files.includes(path + '.md') ? path + '.md' : 'welcome.html';
-        }
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileParam = urlParams.get('file'); // Get 'file' from URL
+    if (!fileParam) return 'outline.md'; // Default file
 
+    // Check if the file exists in the predefined list
+    return files.includes(fileParam + '.html') ? fileParam + '.html' :
+           files.includes(fileParam + '.pdf') ? fileParam + '.pdf' :
+           files.includes(fileParam + '.md') ? fileParam + '.md' : 'welcome.html';
+}
 
-    
-        // Load the content of "welcome.html" when the page loads
-        window.onload = () => {
-            loadFileList();
-            const fileToLoad = getFileFromURL();
-            loadFileContent('outline.md');  // Automatically load welcome.html when the page loads
-        };
+window.onload = () => {
+    loadFileList();
+    const fileToLoad = getFileFromURL();
+    loadFileContent(fileToLoad);
+};
+
     </script>
     
 
