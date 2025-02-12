@@ -1,8 +1,12 @@
 # Physics, mathematics, and understanding of seismology
 
-创建于 25.01.12
+25.01.12
 
-在科研过程中的学习笔记大都会存在这里. 可以直接在右侧选择相关文件, 也可以访问github下载原始文件, 所有笔记均以md、html和pdf形式存储.
+各种[笔记](https://github.com/3326545509/note.github.io). pdf、html、markdown格式.
+ 
+<progress value="2" max="100"></progress> 2/100
+
 
 ## 目录
 * T-matrix: 一种基于高阶散射理论正演和反演波场的方法.
+* Derivative: 声波方程的一阶弗雷谢导数, 一阶和高阶波恩近似
