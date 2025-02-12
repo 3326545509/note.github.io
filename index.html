@@ -107,18 +107,22 @@
             const listItem = document.createElement('li');
             const fileName = file.split('.')[0];  
             listItem.innerText = fileName;
-            listItem.onclick = () => {
-                // Remove 'selected' class from previously selected item
-                document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
 
-                // Add 'selected' class to the clicked item
+            listItem.onclick = () => {
+                document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
                 listItem.classList.add('selected');
 
-                // Load file content
+                // Update URL without reloading the page
+                history.pushState(null, '', `/${fileName}`);
+
                 loadFileContent(file);
             };
+
             return listItem;
         }
+
+
+
         // Load the content of the selected file
         function loadFileContent(file) {
             const contentDiv = document.getElementById('content');
@@ -155,11 +159,20 @@
             }
         }
 
-        
+        function getFileFromURL() {
+            const path = window.location.pathname.split('/').pop(); // Get the last part of the URL
+            if (!path) return 'welcome.html'; // Default file
+            return files.includes(path + '.html') ? path + '.html' : 
+                files.includes(path + '.pdf') ? path + '.pdf' : 
+                files.includes(path + '.md') ? path + '.md' : 'welcome.html';
+        }
+
+
     
         // Load the content of "welcome.html" when the page loads
         window.onload = () => {
             loadFileList();
+            const fileToLoad = getFileFromURL();
             loadFileContent('outline.md');  // Automatically load welcome.html when the page loads
         };
     </script>
