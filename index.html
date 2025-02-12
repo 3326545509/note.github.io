@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Viewer</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.0.3/showdown.min.js"></script>
-    <!-- MathJax script -->
-    <script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>File Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,6 +43,11 @@
             text-align: center;
         }
 
+        #file-list li.selected {
+            background: #007bff;
+            color: white;
+        }
+
         #file-list li:hover {
             background: #d6d6d6;
         }
@@ -64,64 +66,104 @@
             min-height: 90vh;
         }
     </style>
+
+    <!-- KaTeX CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/contrib/auto-render.min.js"></script>
+
 </head>
 <body>
 
     <!-- Sidebar for File List -->
     <div id="sidebar">
-        <h2>Markdown Files</h2>
+        <h2>Content</h2>
         <ul id="file-list"></ul>
     </div>
 
     <!-- Main Content Area -->
     <div id="content-area">
-        <div id="content"><p>Select a file to display content.</p></div>
+        <div id="content">
+            <!-- Initial content will be replaced with the welcome.html content -->
+        </div>
     </div>
 
     <script>
-        // Manually list markdown files (GitHub Pages cannot fetch directory listings)
-        const markdownFiles = ['test1.md', 'test2.md', 'example.md','Derivative.md']; // Update this manually
-
-        // Function to dynamically add file names to the sidebar
+        // Manually list the HTML and PDF files
+        const files = ['outline.md', 'T-matrix.pdf', 'Derivative.html']; // Update this manually
+    
+        // Function to load the file list into the sidebar
         function loadFileList() {
             const list = document.getElementById('file-list');
             list.innerHTML = ''; // Clear existing items
-            markdownFiles.forEach(file => {
-                const listItem = document.createElement('li');
-                listItem.innerText = file;
-                listItem.onclick = () => showContext(file);
+            files.forEach(file => {
+                const listItem = createFileListItem(file);
                 list.appendChild(listItem);
             });
         }
+    
+        // Create list item for each file, remove the file extension
+        function createFileListItem(file) {
+            const listItem = document.createElement('li');
+            const fileName = file.split('.')[0];  
+            listItem.innerText = fileName;
+            listItem.onclick = () => {
+                // Remove 'selected' class from previously selected item
+                document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
 
-        // Function to fetch and display the content of the selected markdown file
-        function showContext(file) {
-            fetch(file)
-                .then(response => {
-                    if (!response.ok) throw new Error('File not found');
-                    return response.text();
-                })
-                .then(text => {
-                    let converter = new showdown.Converter();
-                    let htmlContent = converter.makeHtml(text);
+                // Add 'selected' class to the clicked item
+                listItem.classList.add('selected');
 
-                    // Replace inline formula markers $...$ with MathJax-style
-                    htmlContent = htmlContent.replace(/\$(.+?)\$/g, '\\($1\\)');
-                    
-                    // Render the HTML content into the page
-                    document.getElementById('content').innerHTML = htmlContent;
+                // Load file content
+                loadFileContent(file);
+            };
+            return listItem;
+        }
+        // Load the content of the selected file
+        function loadFileContent(file) {
+            const contentDiv = document.getElementById('content');
 
-                    // Re-run MathJax to process both inline and block formulas
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('content')]);
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = `<p style="color:red;">Error loading file: ${file}</p>`;
-                });
+            if (file.endsWith('.html')) {
+                fetch(file)
+                    .then(response => {
+                        if (!response.ok) throw new Error('File not found');
+                        return response.text();
+                    })
+                    .then(text => {
+                        contentDiv.innerHTML = text;
+                        renderMathInElement(contentDiv);  // Re-run KaTeX if needed
+                    })
+                    .catch(error => {
+                        contentDiv.innerHTML = `<p style="color:red;">Error loading file: ${file}</p>`;
+                    });
+
+            } else if (file.endsWith('.pdf')) {
+                contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="800px" />`;
+
+            } else if (file.endsWith('.md')) {
+                fetch(file)
+                    .then(response => {
+                        if (!response.ok) throw new Error('File not found');
+                        return response.text();
+                    })
+                    .then(text => {
+                        contentDiv.innerHTML = marked.parse(text); // Convert Markdown to HTML
+                    })
+                    .catch(error => {
+                        contentDiv.innerHTML = `<p style="color:red;">Error loading file: ${file}</p>`;
+                    });
+            }
         }
 
-        // Load the file list when the page is loaded
-        window.onload = loadFileList;
+        
+    
+        // Load the content of "welcome.html" when the page loads
+        window.onload = () => {
+            loadFileList();
+            loadFileContent('outline.md');  // Automatically load welcome.html when the page loads
+        };
     </script>
+    
 
 </body>
 </html>
