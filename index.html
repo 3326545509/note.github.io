@@ -65,6 +65,16 @@
             background: #fff;
             min-height: 90vh;
         }
+
+        .large-letter {
+            font-size: 1.8em;  /* Make "C" larger */
+            font-weight: bold;
+        }
+
+        .small-letter {
+            font-size: .2em;  /* Make "C" larger */
+            font-weight: bold;
+        }
     </style>
 
     <!-- KaTeX CSS and JS -->
@@ -77,10 +87,10 @@
 
     <!-- Sidebar for File List -->
     <div id="sidebar">
-        <h2>Content</h2>
+        <h2><span class="large-letter">大</span><span class="small-letter">不了自己</span><span class="large-letter">学</span></h2>
         <ul id="file-list"></ul>
     </div>
-
+    
     <!-- Main Content Area -->
     <div id="content-area">
         <div id="content">
@@ -90,7 +100,9 @@
 
     <script>
         // Manually list the HTML and PDF files
-        const files = ['outline.md', 'T-matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','FFT.pdf']; // Update this manually
+        const files = ['outline.md', 'T-matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf',
+        'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf'
+        ]; // Update this manually
     
         // Function to load the file list into the sidebar
         function loadFileList() {
@@ -142,7 +154,7 @@
                     });
 
             } else if (file.endsWith('.pdf')) {
-                contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="800px" />`;
+                contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="1000px" />`;
 
             } else if (file.endsWith('.md')) {
                 fetch(file)
