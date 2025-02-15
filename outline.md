@@ -1,10 +1,10 @@
 # Physics, mathematics, and understanding of seismology
 
-25.01.12
+25.02.12
 
 各种[笔记](https://github.com/3326545509/note.github.io). pdf、html、markdown格式.
  
-<progress value="11" max="100"></progress> 11/100
+<progress value="15" max="100"></progress> 15/100
 
 
 ## 目录
@@ -34,3 +34,10 @@
 * **球谐函数**
   * 和邵路兵书中介绍的球谐函数思路有差异.分离变数,球谐函数,勒让德函数
   * 公式编号对应书Fourier acoustics sound radiation and farfield acoustical holography. Earl G Williams.
+* **Green**
+  * 波动方程的格林函数. 1D,2D和3D的. 通过频率波数域求解,变换回时间空间域.摘自[Purdue University](https://web.ics.purdue.edu/~nowack/geos557/lecture11-dir/lecture11.htm)
+  * 可以帮助理解,但是没有实践意义. 实现反傅立叶变换的步骤才是求解这种方法的核心难点.
+* **Green2D时频**
+  * 2D波动方程的格林函数的时频傅立叶变换. 用到了贝塞尔函数的定义. 时间域的解(即第一个公式)摘自[Purdue University](https://web.ics.purdue.edu/~nowack/geos557/lecture11-dir/lecture11.htm)
+* **Green3D2D波数求导**
+  * 上文提到了格林函数在频率域求解.这里重点介绍了3D和2D的空间域位移如何转到频率域求导.这并不是一个想当然的过程. 1D的比较显然,同理可得,不细说.

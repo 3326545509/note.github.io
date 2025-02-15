@@ -101,7 +101,7 @@
     <script>
         // Manually list the HTML and PDF files
         const files = ['outline.md', 'T-matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf',
-        'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf'
+        'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf'
         ]; // Update this manually
     
         // Function to load the file list into the sidebar
@@ -179,7 +179,7 @@
     // Check if the file exists in the predefined list
     return files.includes(fileParam + '.html') ? fileParam + '.html' :
            files.includes(fileParam + '.pdf') ? fileParam + '.pdf' :
-           files.includes(fileParam + '.md') ? fileParam + '.md' : 'welcome.html';
+           files.includes(fileParam + '.md') ? fileParam + '.md' : 'outline.md';
 }
 
 window.onload = () => {
