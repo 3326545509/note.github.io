@@ -41,3 +41,5 @@
   * 2D波动方程的格林函数的时频傅立叶变换. 用到了贝塞尔函数的定义. 时间域的解(即第一个公式)摘自[Purdue University](https://web.ics.purdue.edu/~nowack/geos557/lecture11-dir/lecture11.htm)
 * **Green3D2D波数求导**
   * 上文提到了格林函数在频率域求解.这里重点介绍了3D和2D的空间域位移如何转到频率域求导.这并不是一个想当然的过程. 1D的比较显然,同理可得,不细说.
+* **波动方程**
+  * 零碎的波动方程的知识.摘自维基词条wave equation
