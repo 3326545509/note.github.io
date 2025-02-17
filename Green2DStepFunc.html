@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head>
-      <title>Green2D</title>
+      <title>Green2DStepFunc</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
@@ -133,7 +133,11 @@ M834 80h400000v40h-400000z"></path></svg></span></span></span><span class="vlist
 </ol>
 <h2 id="总结">总结 </h2>
 <p><span style="color:rgb(213, 79, 79);">2D的格林函数, 波场都不是“对称”的, 注意不要错误想象!!</span></p>
-<p>顺便也解释了另一个现象: 当sem设置的源是冲击源的时候,模拟出来的波场不是一个干净的冲击,而是带有长长的衰减的尾巴. 当sem设置的源是正弦函数的时候,台站接收到的也不是一个sin函数,而是直观看来整体带有一个倾斜的趋势,(甚至可能形状和sin还有出入,这一点尚未考证).</p>
+<p>顺便也解释了另两个现象:</p>
+<ol>
+<li>当sem设置的源是冲击源的时候,模拟出来的波场不是一个干净的冲击,而是带有长长的衰减的尾巴.</li>
+<li>当sem设置的源是正弦函数的时候,台站接收到的也不是一个sin函数,而是直观看来整体带有一个倾斜的趋势,(甚至可能形状和sin还有出入,这一点尚未考证).</li>
+</ol>
 <h2 id="测试用的代码">测试用的代码 </h2>
 <pre data-role="codeBlock" data-info="" class="language-text"><code>import numpy as np
 import scipy.signal as signal

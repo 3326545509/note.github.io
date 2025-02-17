@@ -110,6 +110,8 @@ Chang, Yunfan, Dinghui Yang, and Xijun He. "A deep learning operator-based numer
 2. 作者并不是单一介质,而是双层. 但是源和台站在同一个介质中,在遇到界面之前还是一个单一介质的问题
 3. 震中距0.1km,波速说2km/s. 走时和子图3的有差别, 有可能是子波给了time shift
 4. 作者没有说2D用的什么类型的源. 最恶劣的情况就是他故意用了一个不对称的像ricker wave,但又不是的. 我觉得这种可能性应该是没有的, 正常人应该不会这么无聊吧?....
+
+类似例子还有很多:[网址](https://www.google.com/imgres?q=2D%20wave%20simulation%20with%20ricker%20wave&imgurl=https%3A%2F%2Flibrary.seg.org%2Fcms%2F10.1190%2Fgeo2023-0622.1%2Fasset%2Fimages%2Fmedium%2Ffigure6.gif&imgrefurl=https%3A%2F%2Flibrary.seg.org%2Fdoi%2F10.1190%2Fgeo2023-0622.1&docid=5rI2vTLRHqD9fM&tbnid=khcHJh3IIHupgM&vet=12ahUKEwiJ1LuDp8qLAxVwv4kEHSQ2DYg4PBAzegQIRxAA..i&w=500&h=347&hcb=2&ved=2ahUKEwiJ1LuDp8qLAxVwv4kEHSQ2DYg4PBAzegQIRxAA)
 ## 总结
 
 <span style="color:rgb(213, 79, 79);">2D的格林函数, 波场都不是“对称”的, 注意不要错误想象!!</span>
