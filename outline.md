@@ -9,10 +9,17 @@
 ## 目录
 * **T-matrix**
   * 一种基于高阶散射理论正演和反演波场的方法.
+* **Hese_Matrix**
+  * 海森矩阵, 一种和Jacobian矩阵有联系的, 用于反演问题的偏微分表达
 * **Derivative**
   * 声波方程的一阶弗雷谢导数, 一阶和高阶波恩近似
 * **Tromp2005**
   *  经典的全波形反演文章
+*  **Frechet**
+   *  Frechet导数, 全波形的 delta Chi 的导出, jacobian Matrix 的定义和运用.
+   *  Frechet是一个更宽泛的概念, Jacobian是其中的一种情况
+*  **Gateau_derivative**
+   *  和Frechet类似的另一个倒数, 但是没有Frechet运用广.
 * **FFT**
   * 理论和离散fft的区别, 相位振幅和实部虚部的关系, 能只取实部的原因.
 * **FFT振幅相位**
@@ -40,7 +47,9 @@
   * 2D波动方程的格林函数的时频傅立叶变换. 用到了贝塞尔函数的定义. 时间域的解(即第一个公式)摘自[Purdue University](https://web.ics.purdue.edu/~nowack/geos557/lecture11-dir/lecture11.htm)
 * **Green3D2D波数求导**
   * 上文提到了格林函数在频率域求解.这里重点介绍了3D和2D的空间域位移如何转到频率域求导.这并不是一个想当然的过程. 1D的比较显然,同理可得,不细说.
-* **波动方程**
-  * 零碎的波动方程的知识.摘自维基词条wave equation
 * **Green2DStepFunc**
   * 2D波动方程的格林函数是一个阶跃函数和1/x形式函数的组合, 不是3D的狄拉克函数. 没有那么好的对称性, 性质更加复杂.
+* **波动方程**
+  * 零碎的波动方程的知识.摘自维基词条wave equation
+* **FreeFEM**
+  * 一种好用的开源FEM软件.
