@@ -28,3 +28,13 @@ An action principle predicts or explains that the particular path taken has a st
 The principle of stationary action tells us that the action doesn't change for small variations of the path. However, it doesn't necessarily mean that the action is at its global minimum. Instead, it may be at a **saddle point or a local minimum/maxima**, as long as small perturbations around the path do not decrease the action.
 
 Jorean 你是天才! 真正的天才!!! 你太强了!!!! 好牛的物理图景, 好扎实的数学功底!!!
+
+
+### [拉格朗日力学简介](https://www.sjsu.edu/faculty/watkins/lagrangianfieldth.htm#:~:text=where-,v%20=%20(dx/dt),time%20and%20the%20spatial%20coordinates.)
+Lagrangian mechanics is a powerful system for analyzing the motion of a system of particles. It can be extended to cover the dynamics of a field.
+
+The Lagrangian function for a particle system is defined as the difference between its kinetic energy and its potential energy. The integral of the Lagrangian function over time is called the action of the system. It was initially believed that a system carried out a motion that minimized its action. This was called the Principle of Least Action. Later it was realized that the motion of a system was such that an infinitesimal variation in the path had no effect on the action of the system. The action was said to be stationary with respect to small variations in its motion.
+
+The potential energy of a system is a function of only its space-time coordinates and the kinetic energy a function of only the time-derivatives of the coordinates. Where a system's motion is subject to constraints there exist a set of generalized coordinates that are compatible with those constraints and hence which simplify the analysis of the system's motion.
+
+Stationarity implies that the system's motion is given by a set of equations known as the Euler-Lagrange equations for the system. For example, for a system of one particle whose potential energy depends upon only one variable x, the Euler-Lagrange equation is
