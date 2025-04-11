@@ -249,29 +249,36 @@
         }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
       } else if (file.endsWith('.pdf')) {
         const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-        if (true) {
+        if (isMobile) {
   contentDiv.innerHTML = `<div id="pdf-scroll-viewer"></div>`;
   const container = document.getElementById('pdf-scroll-viewer');
   const screenWidth = container.clientWidth || window.innerWidth;
+  const dpr = window.devicePixelRatio || 1;
 
   pdfjsLib.getDocument(file).promise.then(pdf => {
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       pdf.getPage(pageNum).then(page => {
         const unscaledViewport = page.getViewport({ scale: 1 });
-        const scale = screenWidth / unscaledViewport.width;
+        const scale = (screenWidth * dpr) / unscaledViewport.width;
         const viewport = page.getViewport({ scale });
 
         const canvas = document.createElement('canvas');
-        canvas.style.display = 'block';
-        canvas.style.margin = '20px auto';
-        canvas.style.width = '100%'; // responsive width
-        canvas.style.height = 'auto'; // keep aspect ratio
+        const context = canvas.getContext('2d');
+
+        // Set canvas size for high-res rendering
         canvas.width = viewport.width;
         canvas.height = viewport.height;
+
+        // Display size (CSS)
+        canvas.style.width = `${viewport.width / dpr}px`;
+        canvas.style.height = `${viewport.height / dpr}px`;
+        canvas.style.display = 'block';
+        canvas.style.margin = '20px auto';
+
         container.appendChild(canvas);
 
         const renderContext = {
-          canvasContext: canvas.getContext('2d'),
+          canvasContext: context,
           viewport: viewport
         };
         page.render(renderContext);
