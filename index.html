@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <title>Seismology Notes</title>
   <style>
     html, body {
@@ -13,19 +14,17 @@
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
-
     body {
       display: flex;
       height: 100vh;
       width: 100vw;
     }
-
     #sidebar {
       width: 300px;
       min-width: 300px;
       max-width: 300px;
       box-sizing: border-box;
-      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      background: linear-gradient(135deg, #67aeca, #214eb0);
       color: white;
       display: flex;
       flex-direction: column;
@@ -35,37 +34,30 @@
       scrollbar-color: rgba(255,255,255,0.4) transparent;
       scrollbar-width: thin;
     }
-
     #sidebar.hidden {
       transform: translateX(-100%);
       position: absolute;
     }
-
     #sidebar::-webkit-scrollbar {
       width: 8px;
     }
-
     #sidebar::-webkit-scrollbar-track {
       background: transparent;
     }
-
     #sidebar::-webkit-scrollbar-thumb {
       background-color: rgba(255, 255, 255, 0.4);
       border-radius: 6px;
       border: 2px solid transparent;
       background-clip: content-box;
     }
-
     #sidebar::-webkit-scrollbar-thumb:hover {
       background-color: rgba(255, 255, 255, 0.6);
     }
-
     .sidebar-controls {
       display: flex;
       justify-content: space-between;
       padding: 10px 20px;
     }
-
     .icon-btn {
       background: none;
       border: none;
@@ -75,26 +67,21 @@
       padding: 5px;
       transition: color 0.2s;
     }
-
     .icon-btn:hover {
       color: #ffccff;
     }
-
     .sidebar-title {
       text-align: center;
       padding: 0 20px 10px;
       font-size: 2.2em;
       font-weight: 900;
     }
-
     .large-letter { font-size: 1.8em; font-weight: bold; }
     .small-letter { font-size: .3em; font-weight: bold; }
-
     #search-container {
       display: none;
       padding: 10px 20px;
     }
-
     #search-input {
       width: 100%;
       padding: 8px;
@@ -102,14 +89,12 @@
       border: none;
       font-size: 15px;
     }
-
     #file-list {
       list-style: none;
       padding: 0 20px;
       overflow-y: auto;
       flex-grow: 1;
     }
-
     #file-list li {
       padding: 10px;
       cursor: pointer;
@@ -119,19 +104,16 @@
       transition: 0.3s;
       text-align: center;
     }
-
     #file-list li.selected {
-      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      background: linear-gradient(to right, #be66e1, #ff7eb3);
       color: white;
       font-weight: bold;
     }
-
     #file-list li:hover {
       background: rgba(255, 255, 255, 0.3);
       transform: scale(1.02);
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-
     #content-area {
       flex-grow: 1;
       height: 100%;
@@ -141,12 +123,10 @@
       align-items: center;
       transition: all 0.3s ease;
     }
-
     body.sidebar-hidden #content-area {
       margin-left: 0;
       width: 100%;
     }
-
     #content {
       width: 95%;
       height: 95%;
@@ -157,31 +137,26 @@
       display: flex;
       flex-direction: column;
     }
-
     #content-inner {
       flex: 1;
       overflow: auto;
       padding: 20px;
       box-sizing: border-box;
     }
-
     #content-inner::-webkit-scrollbar {
       width: 0px;
       background: transparent;
     }
-
     #content-inner {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
-
     #content-inner img {
       max-width: 50%;
       height: auto;
       display: block;
       margin: 10px auto;
     }
-
     #floating-toggle {
       position: absolute;
       top: 10px;
@@ -196,9 +171,19 @@
       z-index: 1000;
       display: none;
     }
-
     body.sidebar-hidden #floating-toggle {
       display: block;
+    }
+    #pdf-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+    }
+    #pdf-nav button {
+      padding: 5px 10px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
 
@@ -211,17 +196,12 @@
   <button id="floating-toggle">☰</button>
   <div id="sidebar">
     <div class="sidebar-controls">
-      <!-- <button class="icon-btn" id="toggle-sidebar">☰</button>
-      <button class="icon-btn" id="toggle-search">🔍</button> -->
-
       <button class="icon-btn" id="toggle-sidebar" title="Toggle Sidebar">
         <img src="hide.svg" alt="Toggle Sidebar" width="24" height="24">
       </button>
-      
       <button class="icon-btn" id="toggle-search" title="Search">
         <img src="search.svg" alt="Search" width="24" height="24">
       </button>
-      
     </div>
     <div class="sidebar-title">
       <span class="large-letter">大</span>
@@ -241,10 +221,7 @@
   </div>
 
   <script>
-    const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf',
-      'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html',
-      '波动方程.pdf','FreeFEM.html','帕塞瓦尔.pdf', 'Field_theo.pdf','弹性散射.pdf', 'DebugTmatrix.pdf','数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf',
-      'FEM降阶方程组.pdf','PML.pdf'];
+    const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf','Derivative.html','Tromp2005.html','Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf','Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html','波动方程.pdf','FreeFEM.html','帕塞瓦尔.pdf','Field_theo.pdf','弹性散射.pdf','DebugTmatrix.pdf','数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf','FEM降阶方程组.pdf','PML.pdf'];
 
     function loadFileList() {
       const list = document.getElementById('file-list');
@@ -272,17 +249,41 @@
         }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
       } else if (file.endsWith('.pdf')) {
         const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-
         if (isMobile) {
-          const encodedUrl = encodeURIComponent(location.origin + '/' + file);
           contentDiv.innerHTML = `
-            <iframe src="https://docs.google.com/gview?url=${encodedUrl}&embedded=true"
-                    style="width:100%; height:100%; border:none;"></iframe>
+            <canvas id="pdf-canvas" style="width:100%; height:auto;"></canvas>
+            <div id="pdf-nav">
+              <button id="prev-page">Previous</button>
+              <span id="page-info"></span>
+              <button id="next-page">Next</button>
+            </div>
           `;
+          const canvas = document.getElementById('pdf-canvas');
+          const ctx = canvas.getContext('2d');
+          let pdfDoc = null, pageNum = 1;
+
+          const renderPage = num => {
+            pdfDoc.getPage(num).then(page => {
+              const viewport = page.getViewport({ scale: 1.5 });
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+              page.render({ canvasContext: ctx, viewport });
+              document.getElementById('page-info').textContent = `Page ${num} of ${pdfDoc.numPages}`;
+            });
+          };
+
+          pdfjsLib.getDocument(file).promise.then(pdf => {
+            pdfDoc = pdf;
+            renderPage(pageNum);
+            document.getElementById('prev-page').onclick = () => {
+              if (pageNum > 1) renderPage(--pageNum);
+            };
+            document.getElementById('next-page').onclick = () => {
+              if (pageNum < pdfDoc.numPages) renderPage(++pageNum);
+            };
+          }).catch(err => contentDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`);
         } else {
-          contentDiv.innerHTML = `
-            <embed src="${file}" type="application/pdf" width="100%" height="100%" style="border: none;" />
-          `;
+          contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="100%" style="border: none;" />`;
         }
       } else if (file.endsWith('.md')) {
         fetch(file).then(res => res.text()).then(text => {
@@ -304,17 +305,14 @@
       document.getElementById('sidebar').classList.toggle('hidden');
       document.body.classList.toggle('sidebar-hidden');
     };
-
     document.getElementById('floating-toggle').onclick = () => {
       document.getElementById('sidebar').classList.remove('hidden');
       document.body.classList.remove('sidebar-hidden');
     };
-
     document.getElementById('toggle-search').onclick = () => {
       const container = document.getElementById('search-container');
       container.style.display = container.style.display === 'block' ? 'none' : 'block';
     };
-
     document.getElementById('search-input').addEventListener('input', function () {
       const query = this.value.toLowerCase();
       document.querySelectorAll('#file-list li').forEach(item => {
@@ -322,7 +320,6 @@
         item.style.display = match ? 'block' : 'none';
       });
     });
-
     window.onload = () => {
       loadFileList();
       loadFileContent(getFileFromURL());
