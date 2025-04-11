@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <title>Seismology Notes</title>
@@ -24,7 +24,7 @@
       min-width: 300px;
       max-width: 300px;
       box-sizing: border-box;
-      background: linear-gradient(135deg, #67aeca, #214eb0);
+      background: linear-gradient(135deg, #6dd5ed, #2193b0);
       color: white;
       display: flex;
       flex-direction: column;
@@ -105,7 +105,7 @@
       text-align: center;
     }
     #file-list li.selected {
-      background: linear-gradient(to right, #be66e1, #ff7eb3);
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
       color: white;
       font-weight: bold;
     }
@@ -249,47 +249,40 @@
         }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
       } else if (file.endsWith('.pdf')) {
         const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-        if (isMobile) {
-  contentDiv.innerHTML = `<div id="pdf-scroll-viewer"></div>`;
-  const container = document.getElementById('pdf-scroll-viewer');
-  const screenWidth = container.clientWidth || window.innerWidth;
-  const dpr = window.devicePixelRatio || 1;
+        if (true) {
+          contentDiv.innerHTML = `
+            <canvas id="pdf-canvas" style="width:100%; height:auto;"></canvas>
+            <div id="pdf-nav">
+              <button id="prev-page">Previous</button>
+              <span id="page-info"></span>
+              <button id="next-page">Next</button>
+            </div>
+          `;
+          const canvas = document.getElementById('pdf-canvas');
+          const ctx = canvas.getContext('2d');
+          let pdfDoc = null, pageNum = 1;
 
-  pdfjsLib.getDocument(file).promise.then(pdf => {
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      pdf.getPage(pageNum).then(page => {
-        const unscaledViewport = page.getViewport({ scale: 1 });
-        const scale = (screenWidth * dpr) / unscaledViewport.width;
-        const viewport = page.getViewport({ scale });
+          const renderPage = num => {
+            pdfDoc.getPage(num).then(page => {
+              const viewport = page.getViewport({ scale: 1.5 });
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+              page.render({ canvasContext: ctx, viewport });
+              document.getElementById('page-info').textContent = `Page ${num} of ${pdfDoc.numPages}`;
+            });
+          };
 
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        // Set canvas size for high-res rendering
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        // Display size (CSS)
-        canvas.style.width = `${viewport.width / dpr}px`;
-        canvas.style.height = `${viewport.height / dpr}px`;
-        canvas.style.display = 'block';
-        canvas.style.margin = '20px auto';
-
-        container.appendChild(canvas);
-
-        const renderContext = {
-          canvasContext: context,
-          viewport: viewport
-        };
-        page.render(renderContext);
-      });
-    }
-  }).catch(err => {
-    contentDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
-  });
-
-
-} else {
+          pdfjsLib.getDocument(file).promise.then(pdf => {
+            pdfDoc = pdf;
+            renderPage(pageNum);
+            document.getElementById('prev-page').onclick = () => {
+              if (pageNum > 1) renderPage(--pageNum);
+            };
+            document.getElementById('next-page').onclick = () => {
+              if (pageNum < pdfDoc.numPages) renderPage(++pageNum);
+            };
+          }).catch(err => contentDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`);
+        } else {
           contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="100%" style="border: none;" />`;
         }
       } else if (file.endsWith('.md')) {
