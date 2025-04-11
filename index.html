@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
   <title>Seismology Notes</title>
@@ -249,17 +249,23 @@
         }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
       } else if (file.endsWith('.pdf')) {
         const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-        if (isMobile) {
+        if (true) {
   contentDiv.innerHTML = `<div id="pdf-scroll-viewer"></div>`;
   const container = document.getElementById('pdf-scroll-viewer');
+  const screenWidth = container.clientWidth || window.innerWidth;
 
   pdfjsLib.getDocument(file).promise.then(pdf => {
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       pdf.getPage(pageNum).then(page => {
-        const viewport = page.getViewport({ scale: 1.5 });
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const scale = screenWidth / unscaledViewport.width;
+        const viewport = page.getViewport({ scale });
+
         const canvas = document.createElement('canvas');
         canvas.style.display = 'block';
         canvas.style.margin = '20px auto';
+        canvas.style.width = '100%'; // responsive width
+        canvas.style.height = 'auto'; // keep aspect ratio
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         container.appendChild(canvas);
@@ -274,6 +280,7 @@
   }).catch(err => {
     contentDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
   });
+
 
 } else {
           contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="100%" style="border: none;" />`;
