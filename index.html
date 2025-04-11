@@ -1,205 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <title>File Viewer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <title>Seismology Notes</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
 
-        /* Sidebar (Left Panel) */
-        #sidebar {
-            width: 30%;
-            max-width: 300px;
-            background: #f4f4f4;
-            padding: 15px;
-            overflow-y: auto;
-            border-right: 2px solid #ddd;
-        }
+    body {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
 
-        #sidebar h2 {
-            text-align: center;
-        }
+    #sidebar {
+      width: 300px;
+      min-width: 300px;
+      max-width: 300px;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+      z-index: 10;
+      position: relative;
+      scrollbar-color: rgba(255,255,255,0.4) transparent;
+      scrollbar-width: thin;
+    }
 
-        #file-list {
-            list-style-type: none;
-            padding: 0;
-        }
+    #sidebar.hidden {
+      transform: translateX(-100%);
+      position: absolute;
+    }
 
-        #file-list li {
-            padding: 10px;
-            cursor: pointer;
-            background: #e6e6e6;
-            margin: 5px 0;
-            border-radius: 5px;
-            transition: 0.3s;
-            text-align: center;
-        }
+    #sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
 
-        #file-list li.selected {
-            background: #70b3fb;
-            color: white;
-        }
+    #sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-        #file-list li:hover {
-            background: #d6d6d6;
-        }
+    #sidebar::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.4);
+      border-radius: 6px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
 
-        /* Content Display (Right Panel) */
-        #content-area {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
+    #sidebar::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.6);
+    }
 
-        #content {
-            border: 1px solid #ddd;
-            padding: 15px;
-            background: #fff;
-            min-height: 90vh;
-        }
+    .sidebar-controls {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px;
+    }
 
-        #content img {
-            max-width: 50%; /* Adjust the percentage as needed */
-            height: auto; /* Maintain aspect ratio */
-            display: block;
-            margin: 10px auto; /* Center the images */
-        }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.3em;
+      cursor: pointer;
+      padding: 5px;
+      transition: color 0.2s;
+    }
 
+    .icon-btn:hover {
+      color: #ffccff;
+    }
 
-        .large-letter {
-            font-size: 1.8em;  /* Make "C" larger */
-            font-weight: bold;
-        }
+    .sidebar-title {
+      text-align: center;
+      padding: 0 20px 10px;
+      font-size: 2.2em;
+      font-weight: 900;
+    }
 
-        .small-letter {
-            font-size: .2em;  /* Make "C" larger */
-            font-weight: bold;
-        }
-    </style>
+    .large-letter { font-size: 1.8em; font-weight: bold; }
+    .small-letter { font-size: .3em; font-weight: bold; }
 
-    <!-- KaTeX CSS and JS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/contrib/auto-render.min.js"></script>
+    #search-container {
+      display: none;
+      padding: 10px 20px;
+    }
 
+    #search-input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 15px;
+    }
+
+    #file-list {
+      list-style: none;
+      padding: 0 20px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    #file-list li {
+      padding: 10px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 8px 0;
+      border-radius: 6px;
+      transition: 0.3s;
+      text-align: center;
+    }
+
+    #file-list li.selected {
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      color: white;
+      font-weight: bold;
+    }
+
+    #file-list li:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    #content-area {
+      flex-grow: 1;
+      height: 100%;
+      background: #f7f9fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    body.sidebar-hidden #content-area {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    #content {
+      width: 95%;
+      height: 95%;
+      background: #ffffffee;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #content-inner {
+      flex: 1;
+      overflow: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #content-inner::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+
+    #content-inner {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    #content-inner img {
+      max-width: 50%;
+      height: auto;
+      display: block;
+      margin: 10px auto;
+    }
+
+    #floating-toggle {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #2193b0;
+      color: white;
+      border: none;
+      font-size: 1.2em;
+      border-radius: 5px;
+      padding: 5px 8px;
+      cursor: pointer;
+      z-index: 1000;
+      display: none;
+    }
+
+    body.sidebar-hidden #floating-toggle {
+      display: block;
+    }
+  </style>
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.3/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
+  <button id="floating-toggle">☰</button>
+  <div id="sidebar">
+    <div class="sidebar-controls">
+      <!-- <button class="icon-btn" id="toggle-sidebar">☰</button>
+      <button class="icon-btn" id="toggle-search">🔍</button> -->
 
-    <!-- Sidebar for File List -->
-    <div id="sidebar">
-        <h2><span class="large-letter">大</span><span class="small-letter">不了自己</span><span class="large-letter">学</span></h2>
-        <ul id="file-list"></ul>
+      <button class="icon-btn" id="toggle-sidebar" title="Toggle Sidebar">
+        <img src="hide.svg" alt="Toggle Sidebar" width="24" height="24">
+      </button>
+      
+      <button class="icon-btn" id="toggle-search" title="Search">
+        <img src="search.svg" alt="Search" width="24" height="24">
+      </button>
+      
     </div>
-    
-    <!-- Main Content Area -->
-    <div id="content-area">
-        <div id="content">
-            <!-- Initial content will be replaced with the welcome.html content -->
-        </div>
+    <div class="sidebar-title">
+      <span class="large-letter">大</span>
+      <span class="small-letter">不了自己</span>
+      <span class="large-letter">学</span>
     </div>
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="Search files..." />
+    </div>
+    <ul id="file-list"></ul>
+  </div>
 
-    <script>
-        // Manually list the files
-        const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf',
-        'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html',
-        '波动方程.pdf','FreeFEM.html','帕塞瓦尔.pdf', 'Field_theo.pdf','弹性散射.pdf', 'DebugTmatrix.pdf','数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf',
-        'FEM降阶方程组.pdf','PML.pdf'
-        ]; // Update this manually
-    
-        // Function to load the file list into the sidebar
-        function loadFileList() {
-            const list = document.getElementById('file-list');
-            list.innerHTML = ''; // Clear existing items
-            files.forEach(file => {
-                const listItem = createFileListItem(file);
-                list.appendChild(listItem);
-            });
-        }
-    
-        // Create list item for each file, remove the file extension
-        function createFileListItem(file) {
-    const listItem = document.createElement('li');
-    const fileName = file.split('.')[0];  
-    listItem.innerText = fileName;
+  <div id="content-area">
+    <div id="content">
+      <div id="content-inner"></div>
+    </div>
+  </div>
 
-    listItem.onclick = () => {
-        document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
-        listItem.classList.add('selected');
+  <script>
+    const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf', 'Derivative.html','Tromp2005.html','Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf',
+      'Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html',
+      '波动方程.pdf','FreeFEM.html','帕塞瓦尔.pdf', 'Field_theo.pdf','弹性散射.pdf', 'DebugTmatrix.pdf','数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf',
+      'FEM降阶方程组.pdf','PML.pdf'];
 
-        // Update URL without reloading the page
-        history.pushState(null, '', `?file=${fileName}`);
+    function loadFileList() {
+      const list = document.getElementById('file-list');
+      list.innerHTML = '';
+      files.forEach(file => {
+        const listItem = document.createElement('li');
+        const fileName = file.split('.')[0];
+        listItem.innerText = fileName;
+        listItem.onclick = () => {
+          document.querySelectorAll('#file-list li').forEach(item => item.classList.remove('selected'));
+          listItem.classList.add('selected');
+          history.pushState(null, '', `?file=${fileName}`);
+          loadFileContent(file);
+        };
+        list.appendChild(listItem);
+      });
+    }
 
-        loadFileContent(file);
+    function loadFileContent(file) {
+      const contentDiv = document.getElementById('content-inner');
+      if (file.endsWith('.html')) {
+        fetch(file).then(res => res.text()).then(text => {
+          contentDiv.innerHTML = text;
+          renderMathInElement(contentDiv);
+        }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
+      } else if (file.endsWith('.pdf')) {
+        contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="100%" style="border:none;">`;
+      } else if (file.endsWith('.md')) {
+        fetch(file).then(res => res.text()).then(text => {
+          contentDiv.innerHTML = marked.parse(text);
+        });
+      }
+    }
+
+    function getFileFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fileParam = urlParams.get('file');
+      if (!fileParam) return 'outline.md';
+      return files.includes(fileParam + '.html') ? fileParam + '.html' :
+             files.includes(fileParam + '.pdf') ? fileParam + '.pdf' :
+             files.includes(fileParam + '.md') ? fileParam + '.md' : 'outline.md';
+    }
+
+    document.getElementById('toggle-sidebar').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('hidden');
+      document.body.classList.toggle('sidebar-hidden');
     };
 
-    return listItem;
-}
+    document.getElementById('floating-toggle').onclick = () => {
+      document.getElementById('sidebar').classList.remove('hidden');
+      document.body.classList.remove('sidebar-hidden');
+    };
 
+    document.getElementById('toggle-search').onclick = () => {
+      const container = document.getElementById('search-container');
+      container.style.display = container.style.display === 'block' ? 'none' : 'block';
+    };
 
+    document.getElementById('search-input').addEventListener('input', function () {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll('#file-list li').forEach(item => {
+        const match = item.innerText.toLowerCase().includes(query);
+        item.style.display = match ? 'block' : 'none';
+      });
+    });
 
-        // Load the content of the selected file
-        function loadFileContent(file) {
-            const contentDiv = document.getElementById('content');
-
-            if (file.endsWith('.html')) {
-                fetch(file)
-                    .then(response => {
-                        if (!response.ok) throw new Error('File not found');
-                        return response.text();
-                    })
-                    .then(text => {
-                        contentDiv.innerHTML = text;
-                        renderMathInElement(contentDiv);  // Re-run KaTeX if needed
-                    })
-                    .catch(error => {
-                        contentDiv.innerHTML = `<p style="color:red;">Error loading file: ${file}</p>`;
-                    });
-
-            } else if (file.endsWith('.pdf')) {
-                contentDiv.innerHTML = `<embed src="${file}" type="application/pdf" width="100%" height="1000px" />`;
-
-            } else if (file.endsWith('.md')) {
-                fetch(file)
-                    .then(response => {
-                        if (!response.ok) throw new Error('File not found');
-                        return response.text();
-                    })
-                    .then(text => {
-                        contentDiv.innerHTML = marked.parse(text); // Convert Markdown to HTML
-                    })
-                    .catch(error => {
-                        contentDiv.innerHTML = `<p style="color:red;">Error loading file: ${file}</p>`;
-                    });
-            }
-        }
-
-        function getFileFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const fileParam = urlParams.get('file'); // Get 'file' from URL
-    if (!fileParam) return 'outline.md'; // Default file
-
-    // Check if the file exists in the predefined list
-    return files.includes(fileParam + '.html') ? fileParam + '.html' :
-           files.includes(fileParam + '.pdf') ? fileParam + '.pdf' :
-           files.includes(fileParam + '.md') ? fileParam + '.md' : 'outline.md';
-}
-
-window.onload = () => {
-    loadFileList();
-    const fileToLoad = getFileFromURL();
-    loadFileContent(fileToLoad);
-};
-
-    </script>
-    
-
+    window.onload = () => {
+      loadFileList();
+      loadFileContent(getFileFromURL());
+    };
+  </script>
 </body>
 </html>
