@@ -24,7 +24,7 @@
       min-width: 300px;
       max-width: 300px;
       box-sizing: border-box;
-      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      background: linear-gradient(135deg, #5f42bc, #2193b0);
       color: white;
       display: flex;
       flex-direction: column;
@@ -105,7 +105,7 @@
       text-align: center;
     }
     #file-list li.selected {
-      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      background: linear-gradient(to right, #f3e173, #beff7e);
       color: white;
       font-weight: bold;
     }
@@ -221,7 +221,12 @@
   </div>
 
   <script>
-    const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf','Derivative.html','Tromp2005.html','Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf','Dirac.pdf','Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf','Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html','波动方程.pdf','FreeFEM.html','帕塞瓦尔.pdf','Field_theo.pdf','弹性散射.pdf','DebugTmatrix.pdf','数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf','FEM降阶方程组.pdf','PML.pdf'];
+    const files = ['outline.md', 'T-matrix.pdf','Hese_Matrix.pdf','Derivative.html','Tromp2005.html',
+    'Tromp2005-2.pdf','Frechet.pdf','Gateau_derivative.pdf','FFT.pdf','FFT振幅相位.pdf','FFT_sin_cos.pdf',
+    'Dirac.pdf','Tensor.pdf','复变积分.pdf','Laplace转极坐标.pdf','1D_damping波动方程.pdf','球谐函数.pdf',
+    'Green.pdf','Green2D时频.pdf','Green3D2D波数求导.pdf','Green2DStepFunc.html','波动方程.pdf','FreeFEM.html',
+    '帕塞瓦尔.pdf','Field_theo.pdf','弹性散射.pdf','DebugTmatrix.pdf',
+    '数学符号.html','Tromp1992.md','临时.md','AI_Born.pdf','double_difference.pdf','FEM降阶方程组.pdf','PML.pdf'];
 
     function loadFileList() {
       const list = document.getElementById('file-list');
@@ -249,7 +254,7 @@
         }).catch(() => contentDiv.innerHTML = `<p style="color:red;">Error loading ${file}</p>`);
       } else if (file.endsWith('.pdf')) {
         const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-        if (true) {
+        if (isMobile) {
           contentDiv.innerHTML = `
             <canvas id="pdf-canvas" style="width:100%; height:auto;"></canvas>
             <div id="pdf-nav">
